@@ -54,22 +54,72 @@ The UI and interactions must be **polished, smooth, and responsive**, with anima
 ---
 
 ### 4.2 Node Creation & Editing
-- **Quick Actions**:
-  - `Enter` → sibling node
-  - `Tab` → child node
-  - `Shift+Tab` → move node up a level
-- **Rich Inline Editing**:
-  - Bold, italic, underline, highlight, inline code
-  - Hyperlinks, bullet/numbered lists
-- **Visual Styling**:
-  - Node background colors, border shapes (rounded, pill, rectangle)
-  - Optional icon picker (emoji or SVG icon sets)
-- **Branch Controls**:
-  - Collapse/expand branch
-  - Drag branch as a whole
-- **Merge/Split Nodes**
-- **Links**:
-  - Link nodes to URLs or uploaded files
+
+#### Primary Data Model
+- **Nodes are primarily text-based**:
+  - Multi-line content is supported.
+  - Rich text formatting is allowed using **Markdown** syntax stored in the JSON.
+  - Markdown is rendered to HTML in the UI with sanitization.
+- The text rendering engine supports:
+  - Bold, italic, underline, strikethrough
+  - Headings (H1–H3)
+  - Bullet and numbered lists
+  - Checklists
+  - Hyperlinks
+  - Inline code and code blocks
+  - Block quotes
+  - Inline images (optional)
+- Styling per node:
+  - Text color (any CSS color, with accessible contrast check)
+  - Background color
+  - Border style (solid/dashed/none)
+  - Border radius
+  - Drop shadow toggle
+
+#### Editing Behavior
+- **Inline WYSIWYG Markdown editor**:
+  - Toolbar with basic formatting options
+  - Toggle to “raw Markdown” mode for power users
+  - Live preview in-place
+- **Keyboard controls**:
+  - `Enter` → New paragraph
+  - `Shift+Enter` → Soft line break
+  - `Tab` → Create child node
+  - `Enter` at end of line → Create sibling node
+  - `Ctrl+Enter` → Finish editing
+- Node auto-resizes to fit content, up to a max height (scroll within node if exceeded).
+- Dragging node in **Elastic Mode** moves its position without affecting siblings.
+- In **Strict Mode**, node position is layout-driven but can be nudged.
+
+#### Visual Enhancements
+- **Path Highlighting**:
+  - When a node is selected, all nodes and edges from it up to the root are visually highlighted.
+  - Highlight style:
+    - Nodes in path: brighter border + background tint
+    - Edges in path: accent color
+  - Fades out when deselected.
+- **Selection State**:
+  - Selected node has stronger outline and subtle shadow.
+  - Keyboard navigation moves selection and updates path highlight in real-time.
+
+#### Data Structure (JSON example)
+```json
+{
+  "id": "node-123",
+  "content": "**Project Plan**\n- Define scope\n- Assign roles",
+  "format": "markdown",
+  "style": {
+    "textColor": "#222222",
+    "backgroundColor": "#fef3c7",
+    "border": "1px solid #d97706",
+    "borderRadius": 8,
+    "shadow": true
+  },
+  "position": { "x": 200, "y": 150 },
+  "children": ["node-124", "node-125"],
+  "parent": "node-001"
+}
+
 
 ---
 
