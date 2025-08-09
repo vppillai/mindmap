@@ -1,203 +1,245 @@
-# Mind Map Application – Extended Technical Specification (v2.0)
+# Mind Map Application – Extended Technical Specification (v3.0)
 
 ## 1. Overview
-This is a **web-based, minimalist yet powerful mind mapping application** designed as a "thinking canvas" for organizing ideas.  
-It is optimized for **compact visual representation**, **keyboard-driven editing**, **rich export formats**, and **AI-assisted ideation**.  
+A **web-based, modern, minimal-yet-powerful mind mapping application** designed as a **thinking canvas** for organizing ideas.  
+It emphasizes **clarity**, **compact representation**, **keyboard-first editing**, **local-first persistence**, and **AI-assisted ideation**.  
 
-It features two layout modes:
-- **Elastic Mode**: Fully freeform — users can drag nodes anywhere, overlap allowed.
-- **Strict Mode**: Automatic non-overlapping arrangement for readability.
+The app supports two **complementary layout modes**:
+- **Elastic Mode**: Fully freeform placement, complete manual control.
+- **Strict Mode**: Balanced, automatic arrangement for clean tree/radial layouts, avoiding overlaps.
+
+The UI and interactions must be **polished, smooth, and responsive**, with animations and transitions that make rearranging, zooming, and editing feel natural.
 
 ---
 
 ## 2. Target Users
-- Knowledge workers and researchers  
-- Writers and journalists  
-- Product designers and strategists  
-- Students and educators  
-- Anyone who needs **a compact, visual thinking tool** that can export to documents.
+- Researchers, engineers, and knowledge workers
+- Writers, journalists, and content creators
+- Product designers and strategists
+- Students and educators
+- Teams planning projects or brainstorming ideas
 
 ---
 
-## 3. Primary Goals
-1. Keep the **visual footprint compact** while maximizing clarity.  
-2. Maintain **feature richness** without overloading UI.  
-3. Allow **manual and automatic layouts** to coexist seamlessly.  
-4. Make the app **keyboard-first** with full mouse/touch support.  
-5. Enable **persistent user settings** for a personalized workspace.  
-6. Support **AI-driven assistance** for node expansion, summarization, and brainstorming.  
-7. Allow **local-first data storage** with easy export/import.  
-8. Provide **easy self-hosting and deployment**.
+## 3. Core Design Principles
+1. **Compact Clarity** – Maximize idea density without clutter.
+2. **Dual Control** – Allow both manual and automatic node arrangement.
+3. **Keyboard-First, Mouse-Ready** – Power users get fast shortcuts, casual users get intuitive clicks/taps.
+4. **No Vendor Lock-In** – Fully portable JSON/Markdown formats.
+5. **Offline-First** – Works entirely offline, with optional online sync.
+6. **Extendable** – Designed with an API for future plugins/extensions.
+7. **Visual Delight** – Clean, modern aesthetic with subtle shadows, rounded corners, and soft animations.
 
 ---
 
 ## 4. Core Features
 
 ### 4.1 Layout Modes
-- **Elastic Mode**
-  - Drag nodes anywhere on an infinite canvas.
-  - Overlaps allowed (nodes and edges).
-  - Position stored in save file.
+**Elastic Mode**  
+- Infinite drag-and-drop placement, overlaps allowed.
+- Node coordinates saved exactly.
+- Grid-snapping toggle (optional).
+- Multi-node selection + group move.
 
-- **Strict Mode**
-  - Tree-like or radial arrangement.
-  - No overlaps — uses **collision resolution algorithm** (see Section 10).
-  - Auto-adjusts neighboring branches when adding/deleting nodes.
-  - Compact placement to maximize visible nodes on screen.
+**Strict Mode**  
+- Tree, radial, or layered hierarchical layouts.
+- **Balanced Layout Algorithm**:
+  - Evenly distributes sibling nodes.
+  - Prevents overlaps with collision detection.
+  - Dynamically reflows only affected branches, not the whole map.
+- Manual override:
+  - User can nudge individual nodes.
+  - Overrides stored until “Recalculate Layout” is triggered.
+
+---
 
 ### 4.2 Node Creation & Editing
-- Add **child node** → `Tab` (indent) or context menu.
-- Add **sibling node** → `Enter` (same level).
-- Inline rich text editor per node (supports bold, italic, underline, highlight, hyperlinks, bullet lists).
-- Node background color, border style, and icon support.
-- Drag to reorder siblings in elastic mode.
-- Merge/split nodes.
-- Collapse/expand branches.
-- Link to external documents or URLs.
+- **Quick Actions**:
+  - `Enter` → sibling node
+  - `Tab` → child node
+  - `Shift+Tab` → move node up a level
+- **Rich Inline Editing**:
+  - Bold, italic, underline, highlight, inline code
+  - Hyperlinks, bullet/numbered lists
+- **Visual Styling**:
+  - Node background colors, border shapes (rounded, pill, rectangle)
+  - Optional icon picker (emoji or SVG icon sets)
+- **Branch Controls**:
+  - Collapse/expand branch
+  - Drag branch as a whole
+- **Merge/Split Nodes**
+- **Links**:
+  - Link nodes to URLs or uploaded files
+
+---
 
 ### 4.3 Infinite Canvas
-- Zoom in/out with `Ctrl+Scroll` or trackpad pinch.
-- Pan with middle mouse drag or spacebar+drag.
-- Mini-map view toggle for navigation.
+- Smooth zoom & pan:
+  - Zoom with Ctrl+Scroll / trackpad pinch
+  - Pan with middle mouse or Space+drag
+- Mini-map with draggable viewport rectangle
+- Optional grid background with opacity slider
+- Canvas boundaries are *virtual* (infinite in all directions)
+
+---
 
 ### 4.4 Data Persistence
-- **LocalStorage auto-save** every X seconds.
-- Manual **Save As** to JSON or Markdown file.
-- Auto-load last opened map from localStorage.
+- **Local-first** with auto-save (every 3 seconds idle)
+- Manual save/load from:
+  - JSON (full fidelity)
+  - Markdown (outline)
+- Optional browser IndexedDB for larger maps
+- “Open Recent” list with thumbnails
+
+---
 
 ### 4.5 Import & Export
-- Import JSON or Markdown (drag-and-drop or file dialog).
-- Export:
-  - JSON (editable, full metadata)
-  - Markdown (outline format)
-  - SVG (vector graphic)
-  - PNG (bitmap image)
-  - PDF (print-ready)
-  - DOCX (with headings reflecting hierarchy)
-- Copy-paste to Excel/Google Sheets:
-  - Maintains hierarchy as indented text.
-  - Rich text formatting preserved where possible.
+- **Import**:
+  - JSON
+  - Markdown
+  - OPML (mind map/outline interchange format)
+- **Export**:
+  - JSON
+  - Markdown
+  - SVG (vector, scalable)
+  - PNG (bitmap)
+  - PDF (with embedded outline)
+  - DOCX (headings reflect hierarchy)
+- **Copy-Paste to External Apps**:
+  - Maintains indentation + basic rich text
+  - Pasting into Excel/Sheets produces an indented outline
+
+---
 
 ### 4.6 Keyboard Shortcuts
 | Action | Shortcut |
 |--------|----------|
-| Add sibling node | `Enter` |
-| Add child node | `Tab` |
-| Delete node | `Delete` |
-| Edit node text | `F2` or double-click |
-| Collapse/expand node | `Space` |
-| Move selection | Arrow keys |
-| Zoom in/out | `Ctrl +` / `Ctrl -` |
-| Select all nodes | `Ctrl+A` |
-| Copy selection | `Ctrl+C` |
-| Paste nodes | `Ctrl+V` |
-| Undo | `Ctrl+Z` |
-| Redo | `Ctrl+Y` or `Ctrl+Shift+Z` |
-| Toggle layout mode | `Ctrl+M` |
-| Open AI Assistant | `Ctrl+Shift+A` |
+| Add sibling node | Enter |
+| Add child node | Tab |
+| Promote node level | Shift+Tab |
+| Delete node | Delete |
+| Edit node | F2 or double-click |
+| Collapse/expand node | Space |
+| Navigate nodes | Arrow keys |
+| Zoom in/out | Ctrl + / Ctrl - |
+| Select all | Ctrl+A |
+| Copy/Paste | Ctrl+C / Ctrl+V |
+| Undo/Redo | Ctrl+Z / Ctrl+Y |
+| Toggle layout mode | Ctrl+M |
+| Search nodes | Ctrl+F |
+| AI assistant | Ctrl+Shift+A |
 
 ---
 
-## 5. AI Assistant Features
+## 5. AI Assistant
 
-### 5.1 UI Integration
-- **Floating button** in bottom-right corner.
-- Click → opens chat window overlay.
-- **Right-click node → “AI Actions” menu**:
-  - Elaborate with prompt.
-  - Summarize branch.
-  - Suggest related ideas.
-  - Convert branch to bullet points for export.
+### 5.1 Integration Points
+- **Context menu on node**:
+  - Expand idea
+  - Summarize branch
+  - Suggest related topics
+  - Generate examples
+- **Floating toolbar**:
+  - One-click “brainstorm mode”
+  - Suggest N child nodes
+- **AI Sidebar**:
+  - Persistent chat with context awareness
+  - Supports dragging AI-generated nodes into map
 
 ### 5.2 Backend AI Proxy
-- Node.js/Express API as proxy.
-- Reads keys from `.env` (`AI_PROVIDER`, `AI_API_KEY`).
+- Node.js/Express backend
+- `.env` config for:
+  - AI provider
+  - API key
+  - Model selection
 - Supports:
   - OpenAI
   - Anthropic
-  - Local models (via REST API)
-- No direct API key exposure to frontend.
+  - Local inference servers (Ollama, LM Studio)
+- Rate limiting + request logging
 
 ---
 
-## 6. Persistent User Settings
-Stored in browser localStorage:
+## 6. User Preferences
+Stored in LocalStorage/IndexedDB:
 - Theme (light/dark/system)
-- Last used layout mode
-- Zoom level
-- Node font size/style
-- Default node color
-- Keyboard shortcut customizations
-- AI model choice (if multiple available)
+- Node font, size, default color
+- Layout mode preference
+- Auto-save interval
+- Keyboard shortcut remapping
+- Default AI provider/model
 
 ---
 
 ## 7. Deployment
 
-### 7.1 Dockerized Setup
-- **Frontend service** (React/TypeScript)
-- **Backend service** (Node.js AI proxy)
-- `docker-compose.yml` for easy multi-container start.
-- `.env` file for:
-  - API keys
-  - Backend port
-  - Allowed origins
-- **Management script** (`manage.sh`):
-  ```bash
-  ./manage.sh start
-  ./manage.sh stop
-  ./manage.sh rebuild
-  ./manage.sh logs
-  ./manage.sh status
-  ```
+### 7.1 Docker Setup
+- **Frontend**: React + TypeScript + Tailwind
+- **Backend**: Node.js/Express AI proxy
+- `docker-compose.yml` to spin up both
+- Reverse proxy with CORS configured
+- Environment variables in `.env`:
+  - `PORT`
+  - `AI_PROVIDER`
+  - `AI_API_KEY`
+  - `ALLOWED_ORIGINS`
 
 ---
 
-## 8. Additional Advanced Features
-- **Search & Filter**: real-time node search with highlights.
-- **Tagging System**: tag nodes and filter by tags.
-- **Version History**: local revision history with restore points.
-- **Branch Locking**: lock a branch to prevent accidental edits.
-- **Quick Templates**: prebuilt mind map templates (SWOT, project planning, essay structure).
-- **Collaboration-ready architecture** (future): WebSockets/CRDTs for multi-user editing.
-- **Custom Themes**: user-defined color palettes.
+## 8. Advanced Features
+- **Search & Filter** with live highlighting
+- **Node Tagging** and tag-based filtering
+- **Branch Locking** to prevent accidental changes
+- **Version History** with rollback
+- **Templates Library**: prebuilt mind map structures
+- **Theme Customization**:
+  - User-defined palettes
+  - Font choices
+- **Print Mode**:
+  - Optimized for A4/Letter PDF
+  - Auto-collapsed branches beyond a depth
 
 ---
 
-## 9. Export to Documents
-- DOCX and PDF include:
-- Mind map image (snapshot)
-- Outline text hierarchy
-- AI-generated executive summary (optional toggle)
+## 9. Strict Mode Layout Algorithm
+1. Assign bounding boxes to nodes.
+2. Calculate sibling angular/horizontal placement based on:
+   - Number of leaves
+   - Branch depth
+3. Apply force-directed separation to prevent overlaps.
+4. Anchor root at fixed position unless user drags it.
+5. Preserve manual offsets unless “Recalculate” triggered.
+6. Animate transitions for smooth rearrangements.
 
 ---
 
-## 10. Strict Mode Collision Resolution Algorithm
-1. Represent nodes as bounding boxes.
-2. Start from root node, place children radially or hierarchically.
-3. For each sibling group:
- - Calculate required space from leaf count.
- - Assign angular/radial positions or horizontal positions.
-4. Detect overlaps → push overlapping nodes apart with force-directed separation until no intersections.
-5. Recalculate edge paths to avoid crossing where possible.
-6. Apply "compactness bias" — minimize space without overlap.
+## 10. Security
+- Sanitize HTML in node content.
+- No API keys in frontend.
+- CSRF + CORS protection.
+- Optional password-protected maps (client-encrypted).
 
 ---
 
-## 11. Security
-- API keys only in backend.
-- HTML sanitization for rich text.
-- CSRF and CORS protection on backend.
-- Optional password-protected maps.
+## 11. Roadmap
+**Phase 1 (MVP)**: Core mind map editing, local persistence, import/export JSON & Markdown.  
+**Phase 2**: Mini-map, search, PDF/SVG export, AI context menu.  
+**Phase 3**: Tagging, templates, version history, theme editor.  
+**Phase 4**: Collaboration (WebSockets + CRDT), cloud sync.
 
 ---
 
-## 12. Roadmap
-**Phase 1 (MVP)**: Core mind map editing, layouts, import/export JSON+MD, localStorage persistence.  
-**Phase 2**: Image/PDF export, mini-map, search.  
-**Phase 3**: AI integration, DOCX export, tagging.  
-**Phase 4**: Collaboration mode, templates, revision history.
+## 12. Visual Design Guidelines
+- **Nodes**: Rounded corners, subtle shadows, 1–2px border
+- **Edges**: Smooth bezier curves, anti-aliased
+- **Colors**: Pastel defaults, accessible contrast
+- **Animations**:
+  - 150–250ms ease-in-out for zoom/pan
+  - Fade/scale in when adding nodes
+  - Slide-out collapse animations
+- **Icons**: Feather icons or Material Icons for minimal look
+- **Font**: Inter or Open Sans
 
 ---
 
-*End of Extended Specification*
+*End of Spec*
