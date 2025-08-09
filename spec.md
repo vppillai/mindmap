@@ -1,4 +1,4 @@
-# Mind Map Application – Extended Technical Specification (v3.0)
+# Mind Map Application – Extended Technical Specification (v3.1)
 
 ## 1. Overview
 A **web-based, modern, minimal-yet-powerful mind mapping application** designed as a **thinking canvas** for organizing ideas.  
@@ -7,6 +7,7 @@ It emphasizes **clarity**, **compact representation**, **keyboard-first editing*
 The app supports two **complementary layout modes**:
 - **Elastic Mode**: Fully freeform placement, complete manual control.
 - **Strict Mode**: Balanced, automatic arrangement for clean tree/radial layouts, avoiding overlaps.
+- **Orientation Toggle**: User can switch between **horizontal** (tree grows sideways) and **vertical** (tree grows top-to-bottom) layouts in Strict Mode.
 
 The UI and interactions must be **polished, smooth, and responsive**, with animations and transitions that make rearranging, zooming, and editing feel natural.
 
@@ -40,9 +41,11 @@ The UI and interactions must be **polished, smooth, and responsive**, with anima
 - Node coordinates saved exactly.
 - Grid-snapping toggle (optional).
 - Multi-node selection + group move.
+- Nodes can be rearranged freely, and positions are remembered.
 
 **Strict Mode**  
 - Tree, radial, or layered hierarchical layouts.
+- Orientation toggle: **vertical** or **horizontal** growth.
 - **Balanced Layout Algorithm**:
   - Evenly distributes sibling nodes.
   - Prevents overlaps with collision detection.
@@ -50,6 +53,12 @@ The UI and interactions must be **polished, smooth, and responsive**, with anima
 - Manual override:
   - User can nudge individual nodes.
   - Overrides stored until “Recalculate Layout” is triggered.
+  - Supports manual reordering of siblings; order is preserved until explicitly changed.
+
+**Re-parenting Support**  
+- Nodes can be **dragged and dropped into another node** to become its child.
+- When re-parenting, all existing children move with the node.
+- Re-parenting works in both Elastic and Strict modes, preserving manual positioning where applicable.
 
 ---
 
@@ -90,6 +99,7 @@ The UI and interactions must be **polished, smooth, and responsive**, with anima
 - Node auto-resizes to fit content, up to a max height (scroll within node if exceeded).
 - Dragging node in **Elastic Mode** moves its position without affecting siblings.
 - In **Strict Mode**, node position is layout-driven but can be nudged.
+- Manual reordering of siblings is supported in both modes, with order remembered.
 
 #### Visual Enhancements
 - **Path Highlighting**:
@@ -101,25 +111,6 @@ The UI and interactions must be **polished, smooth, and responsive**, with anima
 - **Selection State**:
   - Selected node has stronger outline and subtle shadow.
   - Keyboard navigation moves selection and updates path highlight in real-time.
-
-#### Data Structure (JSON example)
-```json
-{
-  "id": "node-123",
-  "content": "**Project Plan**\n- Define scope\n- Assign roles",
-  "format": "markdown",
-  "style": {
-    "textColor": "#222222",
-    "backgroundColor": "#fef3c7",
-    "border": "1px solid #d97706",
-    "borderRadius": 8,
-    "shadow": true
-  },
-  "position": { "x": 200, "y": 150 },
-  "children": ["node-124", "node-125"],
-  "parent": "node-001"
-}
-
 
 ---
 
@@ -176,6 +167,7 @@ The UI and interactions must be **polished, smooth, and responsive**, with anima
 | Copy/Paste | Ctrl+C / Ctrl+V |
 | Undo/Redo | Ctrl+Z / Ctrl+Y |
 | Toggle layout mode | Ctrl+M |
+| Toggle orientation | Ctrl+Shift+M |
 | Search nodes | Ctrl+F |
 | AI assistant | Ctrl+Shift+A |
 
@@ -195,8 +187,20 @@ The UI and interactions must be **polished, smooth, and responsive**, with anima
 - **AI Sidebar**:
   - Persistent chat with context awareness
   - Supports dragging AI-generated nodes into map
+  - User can provide **large blocks of text** and request the AI to insert relevant nodes into the mind map based on:
+    - Understanding of provided content
+    - Existing map context
 
-### 5.2 Backend AI Proxy
+### 5.2 AI Change Approval Workflow
+- After AI proposes changes:
+  - User is shown a **change preview mode**
+  - Acceptance levels:
+    - **Node-level accept/reject**
+    - **Subtree-level accept/reject**
+    - **Accept all**
+- Changes are only committed to the live map after acceptance.
+
+### 5.3 Backend AI Proxy
 - Node.js/Express backend
 - `.env` config for:
   - AI provider
@@ -215,6 +219,7 @@ Stored in LocalStorage/IndexedDB:
 - Theme (light/dark/system)
 - Node font, size, default color
 - Layout mode preference
+- Orientation preference (horizontal/vertical)
 - Auto-save interval
 - Keyboard shortcut remapping
 - Default AI provider/model
@@ -260,6 +265,7 @@ Stored in LocalStorage/IndexedDB:
 4. Anchor root at fixed position unless user drags it.
 5. Preserve manual offsets unless “Recalculate” triggered.
 6. Animate transitions for smooth rearrangements.
+7. Support both **vertical** and **horizontal** orientations.
 
 ---
 
@@ -275,7 +281,8 @@ Stored in LocalStorage/IndexedDB:
 **Phase 1 (MVP)**: Core mind map editing, local persistence, import/export JSON & Markdown.  
 **Phase 2**: Mini-map, search, PDF/SVG export, AI context menu.  
 **Phase 3**: Tagging, templates, version history, theme editor.  
-**Phase 4**: Collaboration (WebSockets + CRDT), cloud sync.
+**Phase 4**: Collaboration (WebSockets + CRDT), cloud sync.  
+**Phase 5**: AI-assisted bulk node generation with accept/reject workflow.
 
 ---
 
